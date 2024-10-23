@@ -20,4 +20,11 @@ public class User {
     private String password;
     private Set<String> roles;
     private boolean isAdmin;
+
+    public User(String token, String username) {
+        this.username = username;
+        this.password = token;
+        this.roles = Set.of("ROLE_USER");
+        this.isAdmin = false;
+    }
 }
