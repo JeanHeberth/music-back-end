@@ -39,13 +39,13 @@ public class MusicController {
     @PutMapping("/{id}")
     public ResponseEntity<?> editMusic(@PathVariable String id, @RequestBody Music updatedMusic) {
 //        String username = authentication.getName(); // Pega o nome do usuário autenticado
-        return musicService.editMusic(id, updatedMusic, "");
+        return musicService.editMusic(id, updatedMusic, "jean");
     }
 
     // Apagar música
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteMusic(@PathVariable String id) {
 //        String username = authentication.getName(); // Pega o nome do usuário autenticado
-        return musicService.deleteMusic(id, "Jean");
+        return musicService.deleteMusic(id, "jean");
     }
 }

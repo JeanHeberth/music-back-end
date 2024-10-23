@@ -42,10 +42,10 @@ public class MusicService {
         }
 
         Music music = optionalMusic.get();
-        User user = userRepository.findByUsername(username);
-        boolean isAdmin = user.getRoles().contains("ROLE_ADMIN");
+        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(username));
+        boolean isAdmin = user.get().getRoles().contains("ROLE_ADMIN");
 
-        if (music.getUserId().equals(user.getId()) || isAdmin) {
+        if (music.getUserId().equals(user.get().getId()) || isAdmin) {
             music.setTitle(updatedMusic.getTitle());
             music.setArtist(updatedMusic.getArtist());
             musicRepository.save(music);
@@ -63,10 +63,11 @@ public class MusicService {
         }
 
         Music music = optionalMusic.get();
-        User user = userRepository.findByUsername(username);
-        boolean isAdmin = user.getRoles().contains("ROLE_ADMIN");
 
-        if (music.getUserId().equals(user.getId()) || isAdmin) {
+        Optional<User> user = Optional.ofNullable(userRepository.findByUsername(username));
+        boolean isAdmin = user.get().getRoles().contains("ROLE_ADMIN");
+
+        if (music.getUserId().equals(user.get().getId()) || isAdmin) {
             musicRepository.delete(music);
             return ResponseEntity.ok("Música excluída com sucesso!");
         } else {
