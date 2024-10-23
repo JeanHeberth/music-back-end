@@ -22,7 +22,6 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
-
         User createdUser = userService.saveUser(user);
         return ResponseEntity.ok(createdUser);
     }
@@ -35,6 +34,6 @@ public class UserController {
 
     @PostMapping("/autenticate")
     public ResponseEntity<User> login(@RequestBody User user) {
-        return ResponseEntity.ok(userService.authenticate(user.getUsername(), user.getPassword()));
+        return ResponseEntity.ok(userService.saveUser(user));
     }
 }
