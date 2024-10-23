@@ -1,6 +1,6 @@
-package com.br.churchmusicbackend.repository;
+package com.br.musicbackend.repository;
 
-import com.br.churchmusicbackend.entitys.Music;
+import com.br.musicbackend.entity.Music;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

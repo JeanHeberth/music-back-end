@@ -1,6 +1,6 @@
-package com.br.churchmusicbackend.repository;
+package com.br.musicbackend.repository;
 
-import com.br.churchmusicbackend.entitys.User;
+import com.br.musicbackend.entity.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UserRepository extends MongoRepository<User, String> {
