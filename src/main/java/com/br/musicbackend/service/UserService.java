@@ -4,6 +4,7 @@ import com.br.musicbackend.entity.User;
 import com.br.musicbackend.repository.UserRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +16,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
 
     public User saveUser(String username, String password) {

@@ -1,33 +1,31 @@
 package com.br.musicbackend.controller;
 
 
-import com.br.musicbackend.dto.UserRegistrationRequest;
+import com.br.musicbackend.dto.UserRequest;
+import com.br.musicbackend.dto.UserResponse;
 import com.br.musicbackend.entity.User;
 import com.br.musicbackend.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-
-    @PostMapping("/user")
-    public ResponseEntity<?> register(@RequestBody UserRegistrationRequest request) {
-        User user = userService.saveUser(request.username(), request.password());
-        return ResponseEntity.ok("User registered: " + user.getUsername());
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<User> getUser(@PathVariable String username) {
-        User user = userService.findByUsername(username);
-        return ResponseEntity.ok(user);
+    @PostMapping("/register")
+    public ResponseEntity<UserResponse> register(@RequestBody UserRequest userRequest) {
+        User user = userService.saveUser(userRequest.username(), userRequest.password());
+        return ResponseEntity.ok(new UserResponse(user.getUsername()));
     }
 
 }
