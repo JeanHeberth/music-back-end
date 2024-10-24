@@ -1,6 +1,7 @@
 package com.br.musicbackend.controller;
 
 
+import com.br.musicbackend.dto.UserRegistrationRequest;
 import com.br.musicbackend.entity.User;
 import com.br.musicbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,8 @@ public class UserController {
 
 
     @PostMapping("/user")
-    public ResponseEntity<?> register(@RequestParam String username, @RequestParam String password) {
-        User user = userService.saveUser(username, password);
+    public ResponseEntity<?> register(@RequestBody UserRegistrationRequest request) {
+        User user = userService.saveUser(request.username(), request.password());
         return ResponseEntity.ok("User registered: " + user.getUsername());
     }
 
