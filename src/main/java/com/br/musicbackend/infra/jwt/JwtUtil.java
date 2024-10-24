@@ -1,13 +1,15 @@
 package com.br.musicbackend.infra.jwt;
 
+import com.br.musicbackend.service.MyUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
 import java.security.Key;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,11 @@ public class JwtUtil {
 
 
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final MyUserDetailsService myUserDetailsService;
+
+    public JwtUtil(MyUserDetailsService myUserDetailsService) {
+        this.myUserDetailsService = myUserDetailsService;
+    }
 
 
     public String extractUsername(String token) {
@@ -39,10 +46,10 @@ public class JwtUtil {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject)
+        return String.valueOf(Jwts.builder().setClaims(claims).setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact();
+                .setExpiration(getExpirationDateFromToken())
+                .signWith(SignatureAlgorithm.HS256, SECRET_KEY).compact());
     }
 
     public Boolean validateToken(String token, String username) {
@@ -52,6 +59,10 @@ public class JwtUtil {
 
     private Boolean isTokenExpired(String token) {
         return extractClaim(token, Claims::getExpiration).before(new Date());
+    }
+
+    private Date getExpirationDateFromToken() {
+        return Date.from(LocalDateTime.now().plusHours(24).toInstant(ZoneOffset.of("-03:00")));
     }
 }
 

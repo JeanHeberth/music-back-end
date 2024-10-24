@@ -7,6 +7,7 @@ import com.br.musicbackend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -38,21 +39,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // Desativa CSRF nas rotas de autenticação e registro de usuário, pois usamos JWT
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/api/auth/**", "/api/user/**"))
-
-                // Define que a aplicação será stateless (sem sessões)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // Configura as permissões para as rotas
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/api/user/**").permitAll() // Permite acesso sem autenticação nessas rotas
-                        .anyRequest().authenticated() // Qualquer outra rota requer autenticação
-                )
-
-                // Adiciona o filtro JWT antes do UsernamePasswordAuthenticationFilter
+                        .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/user/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/music/**").authenticated()  // Todos logados podem ver músicas
+                        .requestMatchers(HttpMethod.POST, "/music/**").hasAnyRole("USER", "ADMIN")  // Todos logados podem inserir músicas
+                        .requestMatchers(HttpMethod.PUT, "/music/**").hasAnyRole("USER", "ADMIN")  // Todos logados podem tentar editar músicas
+                        .requestMatchers(HttpMethod.DELETE, "/music/**").hasRole("ADMIN")  // Somente admin pode apagar músicas
+                        .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userService), UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
