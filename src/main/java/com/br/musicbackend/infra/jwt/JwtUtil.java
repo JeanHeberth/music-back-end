@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -41,7 +42,9 @@ public class JwtUtil {
     }
 
     public String generateToken(String username) {
+        UserDetails userDetails = myUserDetailsService.loadUserByUsername(username);
         Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities());
         return createToken(claims, username);
     }
 

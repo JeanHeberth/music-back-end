@@ -6,10 +6,9 @@ import com.br.musicbackend.dto.UserResponse;
 import com.br.musicbackend.entity.User;
 import com.br.musicbackend.service.UserService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -26,6 +25,12 @@ public class UserController {
     public ResponseEntity<UserResponse> register(@RequestBody UserRequest userRequest) {
         User user = userService.saveUser(userRequest.username(), userRequest.password());
         return ResponseEntity.ok(new UserResponse(user.getUsername()));
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<User>> getUser() {
+     return ResponseEntity.ok(userService.findAll());
+
     }
 
 }
