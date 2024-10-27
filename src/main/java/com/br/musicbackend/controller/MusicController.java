@@ -4,6 +4,7 @@ package com.br.musicbackend.controller;
 import com.br.musicbackend.entity.Music;
 import com.br.musicbackend.infra.jwt.JwtUtil;
 import com.br.musicbackend.service.MusicService;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,10 +39,11 @@ public class MusicController {
     }
 
     @PostMapping("/save")
+    @RolesAllowed({"ROLE_USER", "ROLE_ADMIN"})
     public ResponseEntity<?> addMusica(@RequestBody Music musica, Authentication authentication) {
         // Pega o usuário logado (sub no JWT)
         String username = authentication.getName();
-        musica.setUserId(username);  // Define o criador como o usuário logado
+        musica.setUserId(username);
         Music savedMusica = musicService.save(musica);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedMusica);
     }

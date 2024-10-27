@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
@@ -22,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(jsr250Enabled = true)
 public class SecurityConfig {
 
     @Autowired
@@ -39,16 +41,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/auth/**", "/api/user/**"))
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/user/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/music/**").authenticated()  // Todos logados podem ver músicas
-                        .requestMatchers(HttpMethod.POST, "/music/**").hasAnyRole("USER", "ADMIN")  // Todos logados podem inserir músicas
-                        .requestMatchers(HttpMethod.PUT, "/music/**").hasAnyRole("USER", "ADMIN")  // Todos logados podem tentar editar músicas
-                        .requestMatchers(HttpMethod.DELETE, "/music/**").hasRole("ADMIN")  // Somente admin pode apagar músicas
+                        .requestMatchers(HttpMethod.POST, "/api/user/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/music/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/music/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")  // Todos logados podem inserir músicas
+                        .requestMatchers(HttpMethod.PUT, "/music/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")  // Todos logados podem tentar editar músicas
+                        .requestMatchers(HttpMethod.DELETE, "/music/**").hasAuthority("ROLE_ADMIN")  // Somente admin pode apagar músicas
                         .anyRequest().authenticated())
+
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

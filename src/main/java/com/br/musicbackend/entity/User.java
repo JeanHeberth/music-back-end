@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -23,20 +24,18 @@ public class User implements UserDetails {
 
     private String username;
     private String password;
-    private Set<String> roles;
-    private boolean isAdmin;
+    private String roles;
 
-    public <E> User(String username, String password, ArrayList<E> es) {
+    public <E> User(String username, String password, ArrayList<E> roles) {
         this.username = username;
         this.password = password;
-        this.roles = Set.of("ROLE_USER");
-        this.isAdmin = false;
+        this.roles = roles.toString();
     }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return List.of(new SimpleGrantedAuthority(roles));
     }
 
     @Override
